@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+        integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7 vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="chat-container">
+        <div class="chat-header">Чат</div>
+        <ul id="messages-list" class="messages"></ul>
+        <div class="input-area">
+            <input id="message-input" type="text" placeholder="Написать сообщение..." autofocus>
+            <button onclick="sendMessage()">Отправить</button>
+        </div>
+    </div>
+
+    <script type="text/javascript" charset="utf-8">
+        var socket = io();
+        socket.on('connect', function () {
+            socket.emit('my event', { data: 'I\'m connected!' });
+        });
+        socket.on('message', function (msg) {
+            let li = document.createElement('li');
+            li.textContent = msg;
+
+            document.getElementById('messages-list').appendChild(li);
+        });
+        function sendMessage() {
+            let input = document.getElementById('message-input');
+            socket.send(input.value);
+            input.value = "";
+        }
+    </script>
+</body>
+
+</html>
