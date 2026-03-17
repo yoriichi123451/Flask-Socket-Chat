@@ -10,6 +10,10 @@ socketio = SocketIO(app)
 def index():
     return render_template("index.html")
 
+@app.route("/chat")
+def chats():
+    return render_template("chat.html")
+
 @socketio.on('message')
 def handle_message(data):
     print('received message: ' + data)
