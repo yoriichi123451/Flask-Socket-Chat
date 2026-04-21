@@ -2,10 +2,10 @@ body {
     margin: 0;
     font-family: Arial, sans-serif;
     background: #0f172a;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+    /* display: flex; */
+    /* justify-content: center; */
+    /* align-items: center; */
+    /* height: 100vh; */
 }
 
 .chat-container {
@@ -73,4 +73,235 @@ body {
 
 .input-area button:hover {
     background: #2e64ba;
+}
+
+.profile-and-history-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.profile-page {
+    width: 400px;
+    background: #1e293b;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    padding: 20px;
+}
+
+.profile-title {
+    color: white;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.profile-frame {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.profile-row {
+    background: #334155;
+    padding: 12px;
+    border-radius: 12px;
+}
+
+.profile-text {
+    color: #cbd5f5;
+    margin: 0;
+    font-size: 14px;
+}
+
+.profile-value {
+    display: block;
+    color: white;
+    font-weight: bold;
+    margin-top: 4px;
+}
+
+.profile-row:first-child .profile-value {
+    display: flex;
+    justify-content: center;
+}
+
+.profile-row:first-child .profile-value::before {
+    content: "";
+    width: 80px;
+    height: 80px;
+    background: #3b82f6;
+    border-radius: 50%;
+    display: block;
+}
+
+.avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #3b82f6;
+}
+
+.layout {
+    display: flex;
+    height: 100vh;
+}
+
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 220px;
+    background: #020617;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.logo {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #3b82f6;
+}
+
+.nav {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.nav-item {
+    text-decoration: none;
+    color: #cbd5f5;
+    padding: 10px;
+    border-radius: 10px;
+    transition: 0.2s;
+}
+
+.nav-item:hover {
+    background: #3b82f6;
+    color: white;
+}
+
+.nav-item.active {
+    background: #2563eb;
+    color: white;
+}
+
+.content {
+    margin-left: 300px;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #0f172a;
+}
+
+.flash-container {
+    position: fixed;
+    right: 50px;
+    bottom: 80px;
+}
+.flash-li {
+    padding: 16px 24px;
+    background-color: #020617;
+    border-radius: 16px;
+    color: red;
+    font-size: 20px;
+    list-style: none;
+}
+
+/* === REGISTER FORM === */
+
+.form.register {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.form-wrapper {
+    width: 400px;
+    background: #1e293b;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.field-header {
+    margin: 0 0 6px 4px;
+    color: #cbd5f5;
+    font-size: 14px;
+}
+
+.field-input {
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    background: #334155;
+    color: white;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.field-input:focus {
+    background: #475569;
+    box-shadow: 0 0 0 2px #3b82f6;
+}
+
+.form-wrapper button {
+    margin-top: 10px;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    background: #3b82f6;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.form-wrapper button:hover {
+    background: #2563eb;
+}
+
+.form-wrapper::before {
+    content: "Регистрация";
+    text-align: center;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.form-switch {
+    text-align: center;
+    color: #cbd5f5;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.form-switch a {
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: bold;
+    margin-left: 5px;
+    transition: 0.2s;
+}
+
+.form-switch a:hover {
+    color: #60a5fa;
+    text-decoration: underline;
 }

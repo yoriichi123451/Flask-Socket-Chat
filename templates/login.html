@@ -1,4 +1,22 @@
 {% extends "base.html" %}
+{% block title %}AntiMAX-Вход{% endblock %}
 {% block main %}
-
+<form action="{{url_for('login')}}" class="form login" method="post">
+    <div class="form-wrapper">
+        <div class="form-field">
+            <p class="field-header"><label for="name">Имя пользователя</label></p>
+            <input type="text" name="username" id="name" class="field-input" required minlength="3" maxlength="32">
+        </div>
+        <div class="form-field">
+            <p class="field-header"><label for="password">Введите пароль</label></p>
+            <input type="password" name="password" id="password" class="field-input" required minlength="8"
+                maxlength="24">
+        </div>
+        <button type="submit">Войти</button>
+<p class="form-switch">
+    Впервые на сайте?
+    <a href="{{ url_for('register') }}">Зарегистрируйтесь</a>
+</p>
+    </div>
+</form>
 {% endblock %}

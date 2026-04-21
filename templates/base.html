@@ -1,10 +1,41 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
+    <title>{% block title %}AntiMAX{% endblock %}</title>
     <meta charset="UTF-8">
-    <title>Главная</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/static/scripts/socket.io.min.js"></script>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
+
 <body>
-<h1>Hello world!</h1>
+    <div class="layout">
+        <aside class="sidebar">
+            <h2 class="logo">AntiMAX</h2>
+
+            <nav class="nav">
+                <a href="{{url_for('chats')}}" class="nav-item">Чаты</a>
+                <a href="{{url_for('index')}}" class="nav-item">Профиль</a>
+                <a href="{{url_for('settings')}}" class="nav-item">Настройки</a>
+            </nav>
+        </aside>
+        <main class="content">
+            {% block main %}
+            {% endblock %}
+        </main>
+        <div class="flash-container">
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <ul>
+                {% for message in messages %}
+                <li class="flash-li">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% endwith %}
+        </div>
+    </div>
 </body>
+
 </html>

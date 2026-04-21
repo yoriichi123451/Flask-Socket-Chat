@@ -1,4 +1,26 @@
 {% extends "base.html" %}
+{% block title %}AntiMAX-Регистрация{% endblock %}
 {% block main %}
-
+<form action="{{url_for('register')}}" class="form register" method="post">
+    <div class="form-wrapper">
+        <div class="form-field">
+            <p class="field-header"><label for="name">Имя пользователя</label></p>
+            <input type="text" name="username" id="name" class="field-input" required minlength="3" maxlength="32">
+        </div>
+        <div class="form-field">
+            <p class="field-header"><label for="password">Введите пароль</label></p>
+            <input type="password" name="password" id="password" class="field-input" required minlength="8"
+                maxlength="24">
+        </div>
+        <div class="form-field">
+            <p class="field-header"><label for="check-password">Повторите пароль</label></p>
+            <input type="password" name="check-password" id="check-password" class="field-input" required>
+        </div>
+        <button type="submit">Зарегистрироваться</button>
+        <p class="form-switch">
+            Уже есть аккаунт?
+            <a href="{{ url_for('login') }}">Войти</a>
+        </p>
+    </div>
+</form>
 {% endblock %}

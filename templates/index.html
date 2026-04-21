@@ -1,4 +1,28 @@
 {% extends "base.html" %}
+{% block title %}AntiMAX-Главная{% endblock %}
 {% block main %}
-
+<div class="profile-and-history-wrapper">
+    <div class="profile-page">
+        <h1 class="profile-title">Профиль</h1>
+        <div class="profile-frame">
+            <div class="profile-row">
+                <p class="profile-text">
+                    <img src="{{url_for('static', filename=user.avatar_url)}}" class="avatar">
+                </p>
+            </div>
+            <div class="profile-row">
+                <p class="profile-text">
+                    Имя пользователя:
+                    <span class="profile-value">{{ user.username }}</span>
+                </p>
+            </div>
+            <div class="profile-row">
+                <p class="profile-text">
+                    Био:
+                    <span class="profile-value">{{ user.bio }}</span>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
