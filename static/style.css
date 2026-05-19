@@ -15,7 +15,7 @@ body {
     border-radius: 16px;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
     overflow: hidden;
 }
 
@@ -76,17 +76,17 @@ body {
 }
 
 .profile-and-history-wrapper {
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
 }
 
 .profile-page {
     width: 400px;
     background: #1e293b;
     border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
     padding: 20px;
 }
 
@@ -119,6 +119,8 @@ body {
     color: white;
     font-weight: bold;
     margin-top: 4px;
+    box-sizing: border-box;
+    resize: vertical;
 }
 
 .profile-row:first-child .profile-value {
@@ -135,17 +137,79 @@ body {
     display: block;
 }
 
+.profile-row input.profile-value,
+.profile-row textarea.profile-value {
+    width: 100%;
+    margin-top: 6px;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    background: #1e293b;
+    color: white;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.profile-row input.profile-value:focus,
+.profile-row textarea.profile-value:focus {
+    background: #475569;
+    box-shadow: 0 0 0 2px #3b82f6;
+}
+
+textarea.profile-value {
+    resize: vertical;
+    overflow: hidden;
+    field-sizing: content;
+    min-height: 80px;
+}
+
+.profile-row input[type="file"] {
+    margin-top: 10px;
+    color: #cbd5f5;
+    font-size: 13px;
+}
+
+.profile-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    background: #3b82f6;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.profile-btn:hover {
+    background: #2563eb;
+    transform: scale(1.02);
+}
+
+.profile-row:first-child {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .avatar {
-    width: 80px;
-    height: 80px;
+    width: 90px;
+    height: 90px;
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid #3b82f6;
+    transition: 0.2s;  
+}
+
+.avatar:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px #3b82f6;
 }
 
 .layout {
     display: flex;
-    height: 100vh;
+    min-height: 100vh;
 }
 
 .sidebar {
@@ -192,12 +256,14 @@ body {
 }
 
 .content {
-    margin-left: 300px;
-    height: 100vh;
+    margin-left: 260px;
+    width: calc(100% - 260px);
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
     background: #0f172a;
+    box-sizing: border-box;
 }
 
 .flash-container {
@@ -205,6 +271,7 @@ body {
     right: 50px;
     bottom: 80px;
 }
+
 .flash-li {
     padding: 16px 24px;
     background-color: #020617;
@@ -214,20 +281,18 @@ body {
     list-style: none;
 }
 
-/* === REGISTER FORM === */
-
-.form.register {
+.form {
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100%;
 }
 
 .form-wrapper {
     width: 400px;
     background: #1e293b;
     border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
     padding: 25px;
     display: flex;
     flex-direction: column;
@@ -277,11 +342,18 @@ body {
     background: #2563eb;
 }
 
-.form-wrapper::before {
+.login .form-wrapper::before {
+    content: "Вход";
+}
+
+.register .form-wrapper::before {
     content: "Регистрация";
+}
+
+.form-wrapper::before {
     text-align: center;
     color: white;
-    font-size: 20px;
+    font-size: 22px;
     font-weight: bold;
     margin-bottom: 10px;
 }
@@ -304,4 +376,152 @@ body {
 .form-switch a:hover {
     color: #60a5fa;
     text-decoration: underline;
+}
+
+.account-panel {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #0f172a;
+    padding: 12px;
+    border-radius: 14px;
+    margin-bottom: 25px;
+}
+
+.account-avatar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #3b82f6;
+    object-fit: cover;
+    overflow: hidden;
+}
+
+.min-profile-avatar {
+    max-width: 100%;
+}
+
+.account-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.account-name {
+    color: white;
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.logout-btn {
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: none;
+    background: #334155;
+    color: #cbd5f5;
+    font-size: 13px;
+    cursor: pointer;
+    transition: 0.2s;
+    width: fit-content;
+}
+
+.logout-btn:hover {
+    color: #ef4444;
+    transform: scale(1.03);
+}
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: #020617cc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    transition: 0.2s;
+}
+
+.modal-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.modal-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal {
+    width: 360px;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 20px 40px #00000066;
+    transition: 0.2s;
+}
+
+.modal-overlay.hidden .modal {
+    transform: scale(0.92);
+    opacity: 0;
+}
+
+.modal-overlay.show .modal {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.modal-title {
+    margin: 0;
+    color: white;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.modal-text {
+    margin-top: 12px;
+    margin-bottom: 24px;
+    color: #94a3b8;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.modal-cancel,
+.modal-confirm {
+    padding: 10px 18px;
+    border-radius: 12px;
+    border: none;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+    text-decoration: none;
+}
+
+.modal-cancel {
+    background: #334155;
+    color: white;
+}
+
+.modal-cancel:hover {
+    background: #475569;
+}
+
+.modal-confirm {
+    background: #3b82f6;
+    color: white;
+}
+
+.modal-confirm:hover {
+    background: #2563eb;
 }

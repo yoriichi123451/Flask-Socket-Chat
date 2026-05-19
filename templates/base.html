@@ -13,29 +13,83 @@
     <div class="layout">
         <aside class="sidebar">
             <h2 class="logo">AntiMAX</h2>
-
-            <nav class="nav">
-                <a href="{{url_for('chats')}}" class="nav-item">Чаты</a>
-                <a href="{{url_for('index')}}" class="nav-item">Профиль</a>
-                <a href="{{url_for('settings')}}" class="nav-item">Настройки</a>
-            </nav>
-        </aside>
-        <main class="content">
-            {% block main %}
-            {% endblock %}
-        </main>
-        <div class="flash-container">
-            {% with messages = get_flashed_messages() %}
-            {% if messages %}
-            <ul>
-                {% for message in messages %}
-                <li class="flash-li">{{ message }}</li>
-                {% endfor %}
-            </ul>
-            {% endif %}
-            {% endwith %}
-        </div>
+            {% if "username" in session %}
+            <a href="{{ url_for('index') }}" style="text-decoration: none;">
+                <div class="account-panel">
+                    <div class="account-avatar">
+                        <img src="{{ url_for('static', filename=session['avatar_url']) }}" class="min-profile-avatar"
+                            alt="">
+                    </div>
+            </a>
+            <div class="account-info">
+                <span class="account-name">{{ session["username"] }}</span>
+                <button type="button" class="logout-btn" onclick="openLogoutModal()">
+                    Выйти
+                </button>
+            </div>
+    </div>
+    {% endif %}
+    <nav class="nav">
+        <a href="{{url_for('chats')}}" class="nav-item">Чаты</a>
+        <a href="{{url_for('index')}}" class="nav-item">Профиль</a>
+        <a href="{{url_for('settings')}}" class="nav-item">Настройки</a>
+    </nav>
+    </aside>
+    <main class="content">
+        {% block main %}
+        {% endblock %}
+    </main>
+    <div class="flash-container">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li class="flash-li">{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+    </div>
     </div>
 </body>
+<div class="modal-overlay hidden" id="logoutModal">
+    <div class="modal">
+        <h3 class="modal-title">Выход из аккаунта</h3>
+
+        <p class="modal-text">
+            Вы уверены, что хотите выйти?
+        </p>
+
+        <div class="modal-buttons">
+            <button class="modal-cancel" onclick="closeLogoutModal()">
+                Отмена
+            </button>
+
+            <a href="{{ url_for('logout') }}" class="modal-confirm">
+                Выйти
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    const logoutModal = document.getElementById("logoutModal");
+
+    function openLogoutModal() {
+        logoutModal.classList.remove("hidden");
+        logoutModal.classList.add("show");
+    }
+
+    function closeLogoutModal() {
+        logoutModal.classList.remove("show");
+        logoutModal.classList.add("hidden");
+    }
+
+    logoutModal.addEventListener("click", function (e) {
+        if (e.target === logoutModal) {
+            closeLogoutModal();
+        }
+    });
+</script>
 
 </html>
