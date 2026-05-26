@@ -78,8 +78,27 @@ def index():
 def chats():
     if not session.get("user_id"):
         return redirect(url_for("login"))
-
-    return render_template("chats.html")
+    uid = session["user_id"]
+    user_chats = db.session.query(Chat).join(ChatMember).filter(
+        ChatMember.user_id == uid
+    ).order_by(Chat.created_at.desc()).all()
+    users = User.query.filter(User.id != uid).all()
+    chats_data = []
+    for chat in user_chats:
+        if chat.type == "private":
+            other = ChatMember.query.filter(
+                ChatMember.chat_id == chat.id,
+                ChatMember.user_id != uid
+            ).first()
+            name = other.user.username  if other and other.user else "Неизвестный"
+        else:
+            name = chat.name
+        chats_data.append({
+            "chat": chat,
+            "name": name,
+            "members_count": len(chat.members)
+        })
+    return render_template("chats.html", chats_data=chats_data, users=users)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
