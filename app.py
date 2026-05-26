@@ -60,6 +60,9 @@ def index():
     if request.method == "POST":
         user.username = request.form.get("username")
         user.bio = request.form.get("bio")
+        if request.form.get("delete_avatar"):
+            user.avatar_url = "images/default_avatar.svg"
+            session["avatar_url"] = "images/default_avatar.svg"
         file = request.files.get("avatar")
         if file and file.filename != "":
             filename = file.filename
@@ -71,11 +74,12 @@ def index():
         return redirect(url_for("index"))
     return render_template("index.html", user=user)
 
-@app.route("/chat")
+@app.route("/chats")
 def chats():
     if not session.get("user_id"):
         return redirect(url_for("login"))
-    return render_template("chat.html")
+
+    return render_template("chats.html")
 
 @app.route("/register", methods=["GET", "POST"])
 def register():

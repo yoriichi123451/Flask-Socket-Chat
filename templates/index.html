@@ -1,13 +1,21 @@
 {% extends "base.html" %}
-{% block title %}AntiMAX-Профиль{% endblock %}
+{% block title %}AntiMAX-Профиль{% endblock %}  
 {% block main %}
 <div class="profile-and-history-wrapper">
     <div class="profile-page">
         <h1 class="profile-title">Профиль</h1>
         <form method="POST" enctype="multipart/form-data" class="profile-frame">
-            <div class="profile-row">
+            <div class="profile-row avatar-row">
                 <img src="{{ url_for('static', filename=session['avatar_url']) }}" class="avatar">
-                <input type="file" name="avatar">
+                <label for="avatar-input" class="avatar-upload-btn">
+                    Выбрать файл
+                </label>
+                <input type="file" name="avatar" id="avatar-input">
+                {% if user.avatar_url != "images/default_avatar.svg" %}
+                <button type="submit" name="delete_avatar" value="1" class="delete-avatar-btn">
+                    Удалить аватар
+                </button>
+                {% endif %}
             </div>
             <div class="profile-row">
                 <p class="profile-text">Имя пользователя:</p>
@@ -18,7 +26,9 @@
                 <textarea name="bio" class="profile-value">{{ user.bio }}</textarea>
             </div>
             <div class="profile-row">
-                <button type="submit" class="profile-btn">Сохранить</button>
+                <button type="submit" class="profile-btn">
+                    Сохранить
+                </button>
             </div>
         </form>
     </div>

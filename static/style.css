@@ -525,3 +525,53 @@ textarea.profile-value {
 .modal-confirm:hover {
     background: #2563eb;
 }
+
+.avatar-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+}
+
+#avatar-input {
+    display: none;
+}
+
+.avatar-upload-btn {
+    padding: 8px 14px;
+    border-radius: 10px;
+    background: #2563eb;
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    border: 1px solid #3b82f6;
+    box-shadow: 0 4px 12px #00000033;
+}
+
+.avatar-upload-btn:hover {
+    background: #3b82f6;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px #00000044;
+}
+
+.delete-avatar-btn {
+    padding: 8px 14px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    background: #1e293b;
+    color: #f87171;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    box-shadow: 0 4px 12px #00000022;
+}
+
+.delete-avatar-btn:hover {
+    background: #334155;
+    border: transparent;
+    transform: translateY(-1px);
+    color: #ef4444;
+}
