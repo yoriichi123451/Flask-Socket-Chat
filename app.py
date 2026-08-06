@@ -165,7 +165,7 @@ def logout():
 def settings():
     if not session.get("user_id"):
         return redirect(url_for("login"))
-    return render_template("chat.html")
+    return render_template("chats.html")
 
 @app.route("/chat/<int:chat_id>")
 def chat_view(chat_id):

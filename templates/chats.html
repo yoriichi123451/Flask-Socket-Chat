@@ -42,6 +42,30 @@
             </div>
         </form>
     </div>
-</div>
+    {% if chats_data %}
+    <ul class="chat-list">
+        {% for item in chats_data %}
+        <li class="chat-item">
+            <a class="chat-link" href="{{url_for('chat_view', chat_id=item.chat.id)}}">
+                <div class="chat-icon">
+                    <img src="{{url_for('static', filename='images/default_avatar.svg')}}" alt="">
+                </div>
+                <div class="chat-info">
+                    <span class="chat-name"> {{ item.name }}</span>
+                    <span class="chat-meta"> 
+                        {% if item.chat.type == group %} 
+                        {{item.members_count}} уч. 
+                        {% else %}
+                        Личный чат
+                        {% endif %}
+                    </span>
+                </div>
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="chats-empty">У вас нет чатов</p>
+    {% endif %}
 </div>
 {% endblock %}
