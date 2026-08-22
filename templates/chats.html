@@ -3,10 +3,10 @@
 {% block main %}
 <div class="chats-wrap">
     <div class="chats-toolbar">
-        <h2>Чаты</h2>
+        <h2 class="form-label">Чаты</h2>
         <div class="chat-actions">
-            <button onclick="toggleForm('form-private')">+ Личный</button>
-            <button onclick="toggleForm('form-group')">+ Группа</button>
+            <button class="user-btn" onclick="toggleForm('form-private')">+ Личный</button>
+            <button class="user-btn" onclick="toggleForm('form-group')">+ Группа</button>
         </div>
     </div>
 
@@ -48,13 +48,17 @@
         <li class="chat-item">
             <a class="chat-link" href="{{url_for('chat_view', chat_id=item.chat.id)}}">
                 <div class="chat-icon">
+                    {% if item.chat.type == group %}
+                    <img src="{{url_for('static', filename='images/default_group_icon.svg')}}" alt="">
+                    {% else %}
                     <img src="{{url_for('static', filename='images/default_avatar.svg')}}" alt="">
+                    {% endif %}
                 </div>
                 <div class="chat-info">
                     <span class="chat-name"> {{ item.name }}</span>
-                    <span class="chat-meta"> 
-                        {% if item.chat.type == group %} 
-                        {{item.members_count}} уч. 
+                    <span class="chat-meta">
+                        {% if item.chat.type == group %}
+                        {{item.members_count}} уч.
                         {% else %}
                         Личный чат
                         {% endif %}
@@ -68,4 +72,10 @@
     <p class="chats-empty">У вас нет чатов</p>
     {% endif %}
 </div>
+<script>
+    function toggleForm(formId) {
+        const form = document.getElementById(formId);
+        form.classList.toggle("hidden");
+    }
+</script>
 {% endblock %}

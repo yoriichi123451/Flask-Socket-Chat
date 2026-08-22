@@ -13,4 +13,3 @@ Simple chat using flask and WebSocket
     * Получать иконки чатов
 * chats.html
   * Стилизовать
-  * Реализовать цикл рендерящий список чатов

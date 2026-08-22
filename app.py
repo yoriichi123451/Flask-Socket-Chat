@@ -96,7 +96,8 @@ def chats():
         chats_data.append({
             "chat": chat,
             "name": name,
-            "members_count": len(chat.members)
+            "members_count": len(chat.members),
+            "type": chat.type
         })
     return render_template("chats.html", chats_data=chats_data, users=users)
 
