@@ -4,61 +4,28 @@
 <div class="chats-wrap">
     <div class="chats-toolbar">
         <h2 class="form-label">Чаты</h2>
-        <div class="chat-actions">
-            <button class="user-btn" onclick="toggleForm('form-private')">+ Личный</button>
-            <button class="user-btn" onclick="toggleForm('form-group')">+ Группа</button>
-        </div>
-    </div>
 
-    <div id="form-private" class="create-form hidden">
-        <p class="form-label">Начать личный чат с:</p>
-        <div class="user-list">
-            {% for user in users %}
-            <form method="POST" action="{{url_for('open_private_chat', target_user_id=user.id)}}">
-                <button type="submit" class="user-btn">{{user.username}}</button>
-            </form>
-            {% else %}
-            <p class="form-empty">Нет других пользователей</p>
-            {% endfor %}
-        </div>
-    </div>
-
-    <div id="form-group" class="create-form hidden">
-        <form method="POST" action="{{url_for('create_group')}}">
-            <div class="form-row">
-                <input class="form-input" type="text" name="name" placeholder="Название группы" required>
-                <button type="submit" class="user-btn">Создать</button>
-            </div>
-            <p class="form-label">Участники:</p>
-            <div class="user-list">
-                {% for user in users %}
-                <label class="user-check">
-                    <input type="checkbox" name="members" value="{{user.id}}">
-                    {{user.username}}
-                </label>
-                {% else %}
-                <p class="form-empty">Нет других пользователей</p>
-                {% endfor %}
-            </div>
-        </form>
+        <a href="{{ url_for('new_chat') }}" class="user-btn new-chat-btn">
+            + Новый чат
+        </a>
     </div>
     {% if chats_data %}
     <ul class="chat-list">
         {% for item in chats_data %}
         <li class="chat-item">
-            <a class="chat-link" href="{{url_for('chat_view', chat_id=item.chat.id)}}">
+            <a class="chat-link" href="{{ url_for('chat_view', chat_id=item.chat.id) }}">
                 <div class="chat-icon">
-                    {% if item.chat.type == group %}
-                    <img src="{{url_for('static', filename='images/default_group_icon.svg')}}" alt="">
+                    {% if item.chat.type == "group" %}
+                    <img src="{{ url_for('static', filename='images/default_group_icon.svg') }}" alt="">
                     {% else %}
-                    <img src="{{url_for('static', filename='images/default_avatar.svg')}}" alt="">
+                    <img src="{{ url_for('static', filename='images/default_avatar.svg') }}" alt="">
                     {% endif %}
                 </div>
                 <div class="chat-info">
-                    <span class="chat-name"> {{ item.name }}</span>
+                    <span class="chat-name">{{ item.name }}</span>
                     <span class="chat-meta">
-                        {% if item.chat.type == group %}
-                        {{item.members_count}} уч.
+                        {% if item.chat.type == "group" %}
+                        {{ item.members_count }} уч.
                         {% else %}
                         Личный чат
                         {% endif %}
@@ -69,13 +36,12 @@
         {% endfor %}
     </ul>
     {% else %}
-    <p class="chats-empty">У вас нет чатов</p>
+    <div class="chats-empty">
+        <p>У вас нет чатов</p>
+        <a href="{{ url_for('new_chat') }}" class="user-btn">
+            Создать первый чат
+        </a>
+    </div>
     {% endif %}
 </div>
-<script>
-    function toggleForm(formId) {
-        const form = document.getElementById(formId);
-        form.classList.toggle("hidden");
-    }
-</script>
 {% endblock %}

@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+{% block title %}Новый чат — AntiMAX{% endblock %}
+{% block main %}
+<div class="new-chat-page">
+    <div class="new-chat-header">
+        <a href="{{ url_for('chats') }}" class="back-btn">⇽</a>
+        <div>
+            <h2>Новый чат</h2>
+            <p>Выберите тип чата</p>
+        </div>
+    </div>
+    <div class="chat-type-buttons">
+        <button type="button" class="chat-type-btn" onclick="showChatForm('private')">
+            <span class="chat-type-title">Личный чат</span>
+            <span class="chat-type-description">Общение один на один</span>
+        </button>
+        <button type="button" class="chat-type-btn" onclick="showChatForm('group')">
+            <span class="chat-type-title">Группа</span>
+            <span class="chat-type-description">Общение с несколькими пользователями</span>
+        </button>
+    </div>
+    <div id="private-form" class="new-chat-form hidden">
+        <h3>Личный чат</h3>
+        <p class="new-chat-hint">Найдите пользователя, с которым хотите начать общение.</p>
+        <input type="text" id="user-search-input" class="form-input" placeholder="Введите имя пользователя"
+            autocomplete="off">
+        <div id="user-search-results" class="search-results"></div>
+    </div>
+    <div id="group-form" class="new-chat-form hidden">
+        <h3>Новая группа</h3>
+        <form method="POST" action="{{ url_for('create_group') }}">
+            <input class="form-input" type="text" name="name" placeholder="Название группы" required>
+            <div id="selected-members" class="selected-members"></div>
+            <p class="new-chat-hint">Добавьте участников:</p>
+            <input type="text" id="group-search-input" class="form-input" placeholder="Введите имя пользователя"
+                autocomplete="off">
+            <div id="group-search-results" class="search-results"></div>
+            <div id="group-hidden-inputs"></div>
+            <button type="submit" class="create-chat-btn">
+                Создать группу
+            </button>
+        </form>
+    </div>
+</div>
+<script>
+    const privateForm = document.getElementById("private-form");
+    const groupForm = document.getElementById("group-form");
+
+    function showChatForm(type) {
+        privateForm.classList.add("hidden");
+        groupForm.classList.add("hidden");
+        if (type === "private") {
+            privateForm.classList.remove("hidden");
+            const input = document.getElementById("user-search-input");
+            setTimeout(() => input.focus(), 50);
+        }
+        if (type === "group") {
+            groupForm.classList.remove("hidden");
+            const input = document.getElementById("group-search-input");
+            setTimeout(() => input.focus(), 50);
+        }
+    }
+
+    function escapeHTML(str) {
+        return str
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    const searchInp = document.getElementById("user-search-input");
+    const searchResults = document.getElementById("user-search-results");
+    let searchTimer = null;
+    searchInp.addEventListener("input", () => {
+        const q = searchInp.value.trim();
+        clearTimeout(searchTimer);
+        if (q.length < 3) {
+            searchResults.innerHTML =
+                q.length > 0
+                    ? `<div class="search-hint">Введите ещё ${3 - q.length} симв.</div>`
+                    : "";
+
+            return;
+        }
+        searchResults.innerHTML =
+            `<div class="search-loading">Поиск...</div>`;
+        searchTimer = setTimeout(() => {
+            fetch(`/api/users/search?q=${encodeURIComponent(q)}`)
+                .then(r => r.json())
+                .then(users => {
+                    if (users.length === 0) {
+                        searchResults.innerHTML =
+                            `<div class="search-hint">Никого не найдено</div>`;
+                        return;
+                    }
+                    searchResults.innerHTML = users.map(user => `
+                    <div class="search-result-item">
+                        <span>${escapeHTML(user.username)}</span>
+
+                        <form method="POST"
+                              action="/chat/private/${user.id}">
+                            <button class="open-btn" type="submit">
+                                Написать
+                            </button>
+                        </form>
+                    </div>
+                `).join("");
+                })
+                .catch(error => {
+                    console.error(error);
+                    searchResults.innerHTML =
+                        `<div class="search-hint">Ошибка запроса</div>`;
+                });
+
+        }, 300);
+    });
+
+    const groupSearchInp = document.getElementById("group-search-input");
+    const groupSearchResults = document.getElementById("group-search-results");
+    const selectedMembers = document.getElementById("selected-members");
+    const hiddenInps = document.getElementById("group-hidden-inputs");
+    const selectedUsers = new Map();
+
+    groupSearchInp.addEventListener("input", () => {
+        const q = groupSearchInp.value.trim();
+        if (q.length < 3) {
+            groupSearchResults.innerHTML =
+                q.length > 0
+                    ? `<div class="search-hint">Введите ещё ${3 - q.length} симв.</div>`
+                    : "";
+
+            return;
+        }
+        groupSearchResults.innerHTML =
+            `<div class="search-loading">Поиск...</div>`;
+        fetch(`/api/users/search?q=${encodeURIComponent(q)}`)
+            .then(r => r.json())
+            .then(users => {
+                const filtered = users.filter(user =>
+                    !selectedUsers.has(user.id)
+                );
+                if (filtered.length === 0) {
+                    groupSearchResults.innerHTML =
+                        `<div class="search-hint">Пользователи не найдены</div>`;
+                    return;
+                }
+                groupSearchResults.innerHTML = filtered.map(user => `
+                <button
+                    type="button"
+                    class="group-user-result"
+                    onclick="addMember(${user.id}, '${escapeHTML(user.username)}')">
+
+                    ${escapeHTML(user.username)}
+
+                </button>
+            `).join("");
+            })
+            .catch(error => {
+                console.error(error);
+                groupSearchResults.innerHTML =
+                    `<div class="search-hint">Ошибка запроса</div>`;
+            });
+    });
+
+    function addMember(id, username) {
+        if (selectedUsers.has(id)) {
+            return;
+        }
+        selectedUsers.set(id, username);
+        renderSelectedMembers();
+        renderHiddenInputs();
+        groupSearchInp.value = "";
+        groupSearchResults.innerHTML = "";
+    }
+
+    function removeMember(id) {
+        selectedUsers.delete(id);
+        renderSelectedMembers();
+        renderHiddenInputs();
+    }
+
+    function renderSelectedMembers() {
+        selectedMembers.innerHTML = "";
+        selectedUsers.forEach((username, id) => {
+            const member = document.createElement("div");
+            member.className = "selected-member";
+            member.innerHTML = `
+            <span>${escapeHTML(username)}</span>
+            <button type="button"
+                    onclick="removeMember(${id})">
+                ×
+            </button>
+        `;
+            selectedMembers.appendChild(member);
+        });
+    }
+
+    function renderHiddenInputs() {
+        hiddenInps.innerHTML = "";
+        selectedUsers.forEach((username, id) => {
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = "members";
+            input.value = id;
+            hiddenInps.appendChild(input);
+        });
+    }
+</script>
+{% endblock %}

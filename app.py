@@ -1,6 +1,6 @@
 from os import error
 
-from flask import Flask, render_template, request,session,redirect, url_for, flash
+from flask import Flask, render_template, request,session,redirect, url_for, flash, jsonify
 from flask_socketio import SocketIO, send, emit, join_room, leave_room
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import backref
@@ -18,10 +18,12 @@ db = SQLAlchemy(app)
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50),nullable=False)
+    username = db.Column(db.String(50), nullable=False)
     password = db.Column(db.String(100), nullable=False)
     bio = db.Column(db.String(500), nullable=True)
     avatar_url = db.Column(db.String, nullable=True, default="/images/default_avatar.svg")
+    language = db.Column(db.String(10), nullable=False, default="ru")
+    country = db.Column(db.String(50), nullable=False, default="Ukraine")
     created_at = db.Column(db.DateTime, server_default=db.func.now())
 
 class Chat(db.Model):
@@ -81,8 +83,7 @@ def chats():
     uid = session["user_id"]
     user_chats = db.session.query(Chat).join(ChatMember).filter(
         ChatMember.user_id == uid
-    ).order_by(Chat.created_at.desc()).all()
-    users = User.query.filter(User.id != uid).all()
+    ).order_by(Chat.created_at.desc()).all() #TODO Sort by last modified
     chats_data = []
     for chat in user_chats:
         if chat.type == "private":
@@ -94,12 +95,12 @@ def chats():
         else:
             name = chat.name
         chats_data.append({
-            "chat": chat,
+            "chat": chat, #TODO Send icon
             "name": name,
             "members_count": len(chat.members),
             "type": chat.type
         })
-    return render_template("chats.html", chats_data=chats_data, users=users)
+    return render_template("chats.html", chats_data=chats_data)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -110,6 +111,12 @@ def register():
         user_data = dict(request.form)
         if not username:
             flash("Введите ваше имя пользователя", "error")
+            return render_template(
+                "register.html",
+                **user_data
+            )
+        if len(username) < 3:
+            flash("Ваше имя пользователя слишком короткое, минимум 3 символа")
             return render_template(
                 "register.html",
                 **user_data
@@ -162,11 +169,27 @@ def logout():
     session.clear()
     return redirect(url_for("index"))
 
-@app.route("/settings")
+@app.route("/settings", methods=["GET", "POST"])
 def settings():
     if not session.get("user_id"):
         return redirect(url_for("login"))
-    return render_template("chats.html")
+    user = db.get_or_404(User, session["user_id"])
+    if request.method == "POST":
+        language = request.form.get("language")
+        country = request.form.get("country")
+        if language in ["ru", "uk", "en"]:
+            user.language = language
+        if country in ["Ukraine", "Poland", "Germany", "United States", "United Kingdom"]:
+            user.country = country
+        db.session.commit()
+        return redirect(url_for("settings"))
+    return render_template("settings.html", user=user)
+
+@app.route("/chat/new")
+def new_chat():
+    if not session.get("user_id"):
+        return redirect(url_for("login"))
+    return render_template("new_chat.html")
 
 @app.route("/chat/<int:chat_id>")
 def chat_view(chat_id):
@@ -175,7 +198,12 @@ def chat_view(chat_id):
     member = ChatMember.query.filter_by(chat_id=chat_id, user_id=session["user_id"]).first_or_404()
     chat = Chat.query.get_or_404(chat_id)
     messages = Message.query.filter_by(chat_id=chat_id).order_by(Message.sent_at).all()
-    return render_template("chatview.html", chat=chat, messages=messages)
+    chat_display_name = chat.name
+    if chat.type == "private":
+        other = ChatMember.query.filter(ChatMember.chat_id == chat_id, ChatMember.user_id != session["user_id"]).first()
+        if other and other.user:
+            chat_display_name = other.user.username
+    return render_template("chatview.html", chat=chat, messages=messages, chat_display_name=chat_display_name)
 
 @socketio.on('join')
 def on_join(data):
@@ -200,6 +228,7 @@ def handle_message(data):
         "message", {
         'content':content,
         'sender':session["username"],
+        'sender_id': msg.sender_id,
         'sent_at':msg.sent_at.isoformat()
         }, room=f"chat_{chat_id}")
 
@@ -238,6 +267,19 @@ def create_group():
         db.session.add(ChatMember(chat_id=chat.id, user_id=int(uid)))
     db.session.commit()
     return redirect(url_for("chat_view", chat_id=chat.id))
+
+@app.route("/api/users/search")
+def search_users():
+    if not session.get("user_id"):
+        return jsonify([]), 401
+    q = request.args.get("q", "").strip()
+    if len(q) < 3:
+        return jsonify([])
+    users = User.query.filter(
+        User.username.ilike(f"{q}%"),
+        User.id != session["user_id"]
+    ).limit(10).all()
+    return jsonify([{"id": u.id, "username": u.username} for u in users])
 
 if __name__ == "__main__":
     socketio.run(app, allow_unsafe_werkzeug=True)

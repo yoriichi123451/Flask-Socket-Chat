@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}AntiMAX-Настройки{% endblock %}
+{% block main %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/settings.css') }}">
+<div class="settings-container">
+    <h1>Настройки</h1>
+    <form method="POST">
+        <div class="settings-section">
+            <label for="language">Язык:</label>
+            <select name="language" id="language">
+                <option value="ru" {% if user.language=="ru" %}selected{% endif %}>
+                    Русский
+                </option>
+                <option value="uk" {% if user.language=="uk" %}selected{% endif %}>
+                    Українська
+                </option>
+                <option value="en" {% if user.language=="en" %}selected{% endif %}>
+                    English
+                </option>
+            </select>
+        </div>
+        <div class="settings-section">
+            <label for="country">Регион:</label>
+            <select name="country" id="country">
+                <option value="Ukraine" {% if user.country=="Ukraine" %}selected{% endif %}>
+                    🇺🇦 Украина
+                </option>
+                <option value="Poland" {% if user.country=="Poland" %}selected{% endif %}>
+                    🇵🇱 Польша
+                </option>
+                <option value="Germany" {% if user.country=="Germany" %}selected{% endif %}>
+                    🇩🇪 Германия
+                </option>
+                <option value="United States" {% if user.country=="United States" %}selected{% endif %}>
+                    🇺🇸 США
+                </option>
+                <option value="United Kingdom" {% if user.country=="United Kingdom" %}selected{% endif %}>
+                    🇬🇧 Великобритания
+                </option>
+            </select>
+            <p class="hint">
+                Регион используется для определения часового пояса пользователя.
+            </p>
+        </div>
+        <div class="settings-section save-section">
+            <button type="submit">Сохранить</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

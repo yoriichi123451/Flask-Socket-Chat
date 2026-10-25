@@ -1,30 +1,121 @@
 {% extends "base.html" %}
 {% block title %}AntiMAX-Чат{% endblock %}
 {% block main %}
-<div class="chat-container">
-    <div class="chat-header">Чат</div>
-    <ul id="messages-list" class="messages"></ul>
-    <div class="input-area">
+<div class="chatview-wrap">
+    <div class="chatview-header">
+        <a class="back-btn" href="{{url_for('chats')}}">⇽</a>
+        <span class="chatview-name">{{chat_display_name}}</span>
+        <span class="chatview-badge">{{"Групповой" if chat.type=="group" else "Личный"}} чат</span>
+    </div>
+    <ul id="messages-list" class="chatview-messages">
+        {% if messages %}
+        {% for msg in messages %}
+        {% set is_mine = msg.sender_id == session["user_id"] %}
+        <li class="msg-item {{ 'mine' if is_mine else 'theirs' }}">
+            {% if not is_mine and chat.type == "group" %}
+            <span class="msg-author">{{msg.sender.username if msg.sender else "Удалённый аккаунт"}}</span>
+            {% endif %}
+            <div class="msg-bubble">{{msg.content}}</div>
+            <span class="msg-time" data-time="{{ msg.sent_at.isoformat() }}Z"></span>
+        </li>
+        {% endfor %}
+        {% else %}
+        <li class="msg-empty">Сообщений пока нет</li>
+        {% endif %}
+    </ul>
+    <div class="chatview-input-area">
         <input id="message-input" type="text" placeholder="Написать сообщение..." autofocus>
         <button onclick="sendMessage()">Отправить</button>
     </div>
 </div>
 
 <script type="text/javascript" charset="utf-8">
-    var socket = io();
-    socket.on('connect', function () {
-        socket.emit('my event', { data: 'I\'m connected!' });
-    });
-    socket.on('message', function (msg) {
-        let li = document.createElement('li');
-        li.textContent = msg;
+    const CHAT_ID = {{ chat.id }};
+    const MY_ID = {{ session["user_id"] }};
+    const IS_GROUP = {{ "true" if chat.type== "group" else "false" }};
+    const socket = io();
+    const list = document.getElementById('messages-list');
+    const input = document.getElementById('message-input');
 
-        document.getElementById('messages-list').appendChild(li);
+    input.addEventListener("input", () => {
+        input.style.height = "auto";
+        input.style.height = Math.min(input.scrollHeight, 120) + "px";
+    });
+
+    input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+    function scrollBottom() {
+        list.scrollTop = list.scrollHeight;
+    };
+
+    function localizeMessageTimes() {
+        document.querySelectorAll(".msg-time").forEach(element => {
+            const date = new Date(element.dataset.time);
+
+            element.textContent = date.toLocaleTimeString(undefined, {
+                hour: "2-digit",
+                minute: "2-digit"
+            });
+        });
+    }
+
+    function appendMessage({ content, sender, sender_id, sent_at }) {
+        const empty = list.querySelector(".msg-empty");
+        if (empty) empty.remove();
+        const isMine = sender_id === MY_ID;
+
+        const now = sent_at
+            ? new Date(sent_at + "Z").toLocaleTimeString(undefined, {
+                hour: "2-digit",
+                minute: "2-digit"
+            })
+            : new Date().toLocaleTimeString(undefined, {
+                hour: "2-digit",
+                minute: "2-digit"
+            });
+
+        const li = document.createElement('li');
+        li.className = 'msg-item' + (isMine ? ' mine' : ' theirs');
+
+        if (!isMine && IS_GROUP) {
+            const author = document.createElement('span');
+            author.className = 'msg-author';
+            author.textContent = sender || 'Неизвестно';
+            li.appendChild(author);
+        };
+
+        const bubble = document.createElement('div');
+        bubble.className = 'msg-bubble';
+        bubble.textContent = content;
+        li.appendChild(bubble);
+
+        const time = document.createElement('span');
+        time.className = 'msg-time';
+        time.textContent = now;
+        li.appendChild(time);
+
+        list.appendChild(li);
+        scrollBottom();
+    };
+    socket.on('connect', function () {
+        socket.emit('join', { chat_id: CHAT_ID });
+    });
+    socket.on('message', (data) => {
+        appendMessage(data)
     });
     function sendMessage() {
-        let input = document.getElementById('message-input');
-        socket.send(input.value);
+        const text = input.value.trim();
+        if (!text) return;
+
+        socket.emit('message', { chat_id: CHAT_ID, content: text });
         input.value = "";
+        input.style.height = "auto";
     }
+    localizeMessageTimes();
+    scrollBottom();
 </script>
 {% endblock %}
